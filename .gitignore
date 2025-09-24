@@ -81,4 +81,8 @@ Desktop.ini
 # Unrelated directories (if accidentally created in project root)
 /Downloads/
 /workspace/
+/mwb_2/
+/mwb_csharp/
+/pgs/
+/go/
 node_modules/

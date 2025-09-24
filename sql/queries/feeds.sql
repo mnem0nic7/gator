@@ -19,6 +19,11 @@ SELECT
 FROM feeds
 JOIN users ON feeds.user_id = users.id;
 
+-- name: GetFeedByURL :one
+SELECT id, created_at, updated_at, name, url, user_id
+FROM feeds
+WHERE url = $1;
+
 -- name: CreateFeedFollow :one
 WITH inserted_feed_follow AS (
     INSERT INTO feed_follows (id, created_at, updated_at, user_id, feed_id)
@@ -64,5 +69,5 @@ WHERE id = $1;
 -- name: GetNextFeedToFetch :one
 SELECT id, created_at, updated_at, name, url, user_id, last_fetched_at
 FROM feeds
-ORDER BY last_fetched_at NULLS FIRST, created_at ASC
+ORDER BY last_fetched_at NULLS FIRST
 LIMIT 1;

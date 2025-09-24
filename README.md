@@ -4,9 +4,13 @@
 
 - Register/login users (stored in Postgres)
 - Add and follow RSS feeds
-- Continuously aggregate feeds on an interval (`agg <duration>`)
-- Store feed posts in Postgres
-- Browse recent posts from the feeds you follow (`browse [limit]`)
+- Continuously aggregate feeds on an interval (`agg <duration>`), with an optional service wrapper that restarts the worker
+- Store feed posts in Postgres (duplicates skipped by URL)
+- Browse, sort, filter, and page through recent posts from the feeds you follow
+- Fuzzy-search posts by title/description
+- Bookmark posts for later
+- Launch a lightweight terminal UI for browsing posts
+- Experiment with a simple HTTP API façade
 
 ## Requirements
 
@@ -51,16 +55,30 @@ GOOSE_DRIVER=postgres GOOSE_DBSTRING="postgres://postgres:postgres@localhost:543
 ## Common Commands
 
 ```bash
-./gator register alice          # create user
-./gator login alice             # switch current user
-./gator addfeed hn https://hnrss.org/newest  # add and auto-follow feed
+./gator register alice                      # create user
+./gator login alice                         # switch current user
+./gator addfeed hn https://hnrss.org/newest # add and auto-follow feed
 ./gator follow https://wagslane.dev/index.xml
-./gator following               # list followed feeds
-./gator agg 1m                  # start aggregator (Ctrl+C to stop)
-./gator browse 5                # show 5 most recent posts from followed feeds
+./gator following                           # list followed feeds
+
+# Aggregation
+./gator agg 1m            # fetch feeds every minute (Ctrl+C to stop)
+./gator aggservice 1m     # keep agg running; restarts automatically on crash
+
+# Browsing & discovery
+./gator browse 5 0 title asc            # limit, offset, sort field, sort order
+./gator browse 10 0 published_at desc   # default ordering (limit defaults to 2)
+./gator search boot                     # fuzzy-search titles/descriptions
+./gator bookmark <post-uuid>            # bookmark a post you've discovered
+./gator tui                             # open an interactive terminal UI
+
+# API (experimental)
+./gator api              # serve HTTP API on :8080 (Ctrl+C to stop)
 ```
 
-If you omit the browse limit, it defaults to 2.
+Browsing arguments are optional; the defaults are `limit=2`, `offset=0`, `sort=published_at`, `order=desc`, and no feed filter.
+
+**Need post IDs?** Run a SQL query (for example with `psql`) against the `posts` table or extend the CLI output to include IDs when needed.
 
 ## Development
 
@@ -68,6 +86,18 @@ Regenerate `sqlc` code after changing queries:
 
 ```bash
 sqlc generate
+```
+
+### Local testing & smoke checks
+
+```bash
+go test ./...
+go run . reset
+go run . register tester
+go run . login tester
+go run . addfeed "Boot Dev" https://blog.boot.dev/index.xml
+timeout 10s go run . agg 2s   # optional: fetch posts quickly, press Ctrl+C to stop if you skip timeout
+go run . browse 5             # confirm posts are stored locally
 ```
 
 ## Testing
@@ -88,6 +118,8 @@ git branch -M main
 git remote add origin git@github.com:mnem0nic7/gator.git
 git push -u origin main
 ```
+
+When updating existing work, replace the commit message with something descriptive, for example `git commit -m "Add CLI search and bookmarking"`.
 
 ## Notes
 

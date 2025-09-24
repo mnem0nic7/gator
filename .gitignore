@@ -1,0 +1,84 @@
+# Gator CLI Project .gitignore
+
+# Project binary
+/gator
+gator.exe
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build / dist output
+/bin/
+/dist/
+
+# Go test binary, built with `go test -c`
+*.test
+
+# Go build cache
+/vendor/
+.cache/
+
+# Coverage & test artifacts
+*.out
+coverage.out
+htmlcov/
+*.coverprofile
+
+# Databases / local data
+*.db
+*.sqlite
+*.sqlite3
+
+# Configuration files (user-specific)
+.gatorconfig.json
+.env
+.env.*
+*.config.json
+
+# PostgreSQL password file
+.pgpass
+
+# Editor / IDE files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+Thumbs.db
+*.orig
+*.rej
+
+# Logs
+*.log
+logs/
+/tmp/
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+
+# OS generated files
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Cloud credentials
+.aws/
+.azure/
+.gcloud/
+
+# Go module proxy cache
+/pkg/
+/src/
+
+# Unrelated directories (if accidentally created in project root)
+/Downloads/
+/workspace/
+node_modules/
